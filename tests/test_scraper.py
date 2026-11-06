@@ -1,1 +1,3 @@
-# Pruebas del scraper (se completan en la Parte 2)
+[pytest]
+pythonpath = src
+testpaths = tests
