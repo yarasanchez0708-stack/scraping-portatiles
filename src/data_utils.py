@@ -5,7 +5,7 @@ import pandas as pd
 # Nombres posibles de columnas -> nombre estándar
 COLUMN_ALIASES = {
     "titulo": ["titulo", "título", "title", "nombre", "name", "producto"],
-    "precio": ["precio", "price"],
+    "precio": ["precio", "precio_usd", "price"],
     "descripcion": ["descripcion", "descripción", "description"],
     "reseñas": ["reseñas", "resenas", "reviews", "num_reviews"],
 }
@@ -37,9 +37,13 @@ def limpiar_precio(valor) -> float:
 
 def cargar_datos(ruta: str) -> pd.DataFrame:
     """Lee el CSV, normaliza columnas y limpia el precio."""
-    df = normalizar_columnas(pd.read_csv(ruta))
+    df = normalizar_columnas(pd.read_csv(ruta, encoding="utf-8-sig"))
     if "precio" not in df.columns:
-        raise ValueError("El CSV debe tener una columna de precio (precio o price).")
+        raise ValueError("El CSV debe tener una columna de precio (precio, precio_usd o price).")
+    # El CSV consolidado de la EA1 trae los mismos productos extraídos con
+    # 3 herramientas: se deja una sola fila por producto (misma url).
+    if "url" in df.columns:
+        df = df.drop_duplicates(subset="url")
     df["precio"] = df["precio"].apply(limpiar_precio)
     return df.dropna(subset=["precio"]).reset_index(drop=True)
 
