@@ -2,7 +2,7 @@
 import streamlit as st
 from src.data_utils import cargar_datos, filtrar_por_precio, buscar_por_texto
 
-RUTA_CSV = "data/portatiles.csv"
+RUTA_CSV = "data/portatiles_consolidado.csv"
 
 st.set_page_config(page_title="Portátiles - EA3", page_icon="💻", layout="wide")
 st.title("💻 Explorador de portátiles")
