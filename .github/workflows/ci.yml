@@ -25,8 +25,8 @@ jobs:
       - name: Run tests
         run: pytest -v
 
-  deploy:
-    # Despliegue continuo: solo si las pruebas pasan y el cambio llega a main
+  build:
+    # Genera el reporte y sube el sitio como artefacto (solo en main)
     needs: test
     if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
     runs-on: ubuntu-latest
@@ -34,9 +34,6 @@ jobs:
       contents: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -60,6 +57,18 @@ jobs:
         with:
           path: site
 
+  deploy:
+    # Despliegue continuo: publica el artefacto subido por el trabajo build
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
